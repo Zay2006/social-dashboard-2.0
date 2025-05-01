@@ -11,17 +11,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const platforms = [
-  { value: "all", label: "All Platforms" },
-  { value: "twitter", label: "Twitter" },
-  { value: "instagram", label: "Instagram" },
-  { value: "linkedin", label: "LinkedIn" },
-  { value: "facebook", label: "Facebook" },
-]
-
 interface PlatformSelectProps {
-  value: string
-  onValueChange: (value: string) => void
+  value: string;
+  onValueChange: (value: string) => void;
 }
 
 export function PlatformSelect({ value, onValueChange }: PlatformSelectProps) {
@@ -33,11 +25,11 @@ export function PlatformSelect({ value, onValueChange }: PlatformSelectProps) {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Platforms</SelectLabel>
-          {platforms.map((platform) => (
-            <SelectItem key={platform.value} value={platform.value}>
-              {platform.label}
-            </SelectItem>
-          ))}
+          <SelectItem value="all">All Platforms</SelectItem>
+          <SelectItem value="twitter">Twitter</SelectItem>
+          <SelectItem value="instagram">Instagram</SelectItem>
+          <SelectItem value="linkedin">LinkedIn</SelectItem>
+          <SelectItem value="facebook">Facebook</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
