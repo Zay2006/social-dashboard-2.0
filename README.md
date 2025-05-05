@@ -1,19 +1,137 @@
-🚀 Social Media Dashboard
+# 🚀 Social Media Dashboard 2.0
 
-📁 Project Overview
-Industry: Technology
-Developer: Zay2006
-Completion Date: 05/12/2025
-GitHub: Zay2006/social-dashboard
-Trello Board: Assignment Checkbook
-Live Demo: View Dashboard
+A modern, real-time social media analytics dashboard built with Next.js and MySQL, providing centralized insights across multiple platforms.
 
-🧠 Business Problem
-❗ Problem Statement
-Social media teams often juggle multiple platforms, each with its own analytics system. This leads to fragmented data, wasted time, and inconsistent reporting. A lack of real-time insight and centralized tools hampers data-driven decision-making.
+## 📁 Project Overview
+- **Industry**: Technology & Social Media Analytics
+- **Developer**: Zay2006
+- **Version**: 2.0.0
+- **Last Updated**: May 2025
+- **License**: MIT
 
-👥 Target Users
-Social media managers
+## 🎯 Features
+- Real-time analytics across multiple social media platforms
+- Interactive data visualization with dynamic charts
+- Cross-platform performance comparison
+- Dark/Light mode support
+- Mobile-responsive design
+- MySQL database integration for reliable data storage
+- RESTful API endpoints for platform stats and engagement metrics
+
+## 🛠️ Tech Stack
+- **Frontend**: Next.js 15+, React, TypeScript
+- **UI Components**: ShadCN UI, Tailwind CSS
+- **Data Visualization**: Recharts
+- **Database**: MySQL
+- **API**: REST endpoints with Next.js API routes
+- **State Management**: React Hooks
+- **Development**: Turbopack
+
+## 🚀 Getting Started
+
+### Prerequisites
+1. Node.js 18.17 or later
+2. MySQL 8.0 or later
+3. npm or yarn package manager
+
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Zay2006/social-dashboard-2.0.git
+   cd social-dashboard-2.0
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Update the `.env` file with your MySQL credentials:
+   ```
+   DB_HOST=localhost
+   DB_USER=your_mysql_username
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=your_database_name
+   ```
+
+4. **Set up the database**
+   - Create a new MySQL database
+   - Import the schema from `src/lib/db/schema.sql`
+   ```bash
+   mysql -u your_username -p your_database_name < src/lib/db/schema.sql
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+6. **Access the dashboard**
+   Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## 📊 Database Structure
+
+The dashboard uses two main tables:
+- `platform_followers`: Stores follower counts for each platform
+- `engagement_metrics`: Tracks engagement data over time
+
+Refer to `src/lib/db/schema.sql` for the complete database schema.
+
+## 🔌 API Endpoints
+
+- `GET /api/stats/platform`: Fetch platform statistics
+  - Query params: `platform` (optional)
+  - Returns: Follower counts and engagement rates
+
+- `GET /api/stats/engagement`: Fetch engagement metrics
+  - Query params: `platform`, `startDate`, `endDate`
+  - Returns: Time-series engagement data
+
+## 🧪 Testing
+
+```bash
+npm run test
+# or
+yarn test
+```
+
+## 🔒 Security
+
+- Environment variables for sensitive data
+- SQL injection protection
+- API rate limiting
+- Secure database connections
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a pull request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- ShadCN UI for the component library
+- Recharts for data visualization
+- Next.js team for the amazing framework
+
+## 📧 Contact
+
+For questions or feedback, please reach out to [your contact information]Social media managers
 
 Digital marketing teams
 
