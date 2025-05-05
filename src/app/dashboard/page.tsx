@@ -15,7 +15,37 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { cn } from '@/lib/utils';
 import { fadeIn, slideUp } from '@/lib/animations';
 import { chartColors } from '@/lib/colors';
+import { EngagementData } from '@/lib/hooks/use-dashboard-data';
 import type { ReactNode } from 'react';
+
+function getTrendFromEngagement(engagementData: EngagementData[], platform: string): 'up' | 'down' | 'neutral' {
+  if (!engagementData || engagementData.length < 2) return 'neutral';
+  
+  const platformData = engagementData.filter(data => data.name.includes(platform));
+  if (platformData.length < 2) return 'neutral';
+  
+  const latest = platformData[platformData.length - 1].value;
+  const previous = platformData[platformData.length - 2].value;
+  
+  if (latest > previous) return 'up';
+  if (latest < previous) return 'down';
+  return 'neutral';
+}
+
+function getBackgroundColor(platform: string): string {
+  const colors: Record<string, string> = {
+    total: 'bg-sky-50 dark:bg-sky-950',
+    overall: 'bg-sky-50 dark:bg-sky-950',
+    posts: 'bg-violet-50 dark:bg-violet-950',
+    platforms: 'bg-amber-50 dark:bg-amber-950',
+    twitter: 'bg-blue-50 dark:bg-blue-950',
+    facebook: 'bg-indigo-50 dark:bg-indigo-950',
+    instagram: 'bg-pink-50 dark:bg-pink-950',
+    linkedin: 'bg-cyan-50 dark:bg-cyan-950'
+  };
+  
+  return colors[platform.toLowerCase()] || 'bg-gray-50 dark:bg-gray-950';
+}
 
 export default function DashboardPage() {
   const [platform, setPlatform] = useState<string>('all');
@@ -169,34 +199,16 @@ export default function DashboardPage() {
               <CardContent>
                 <div className={cn("grid gap-4 md:grid-cols-2", fadeIn())}>
                   <div className={cn("grid gap-4 md:grid-cols-2 lg:grid-cols-4", slideUp(200))}>
-                    <PlatformStatsCard
-                      platform="Total"
-                      followers={45231}
-                      engagement={8.5}
-                      trend={'down'}
-                      className="bg-sky-50 dark:bg-sky-950"
-                    />
-                    <PlatformStatsCard
-                      platform="Overall"
-                      followers={52489}
-                      engagement={15.2}
-                      trend={'up'}
-                      className="bg-sky-50 dark:bg-sky-950"
-                    />
-                    <PlatformStatsCard
-                      platform="Posts"
-                      followers={342}
-                      engagement={3.5}
-                      trend={'up'}
-                      className="bg-violet-50 dark:bg-violet-950"
-                    />
-                    <PlatformStatsCard
-                      platform="Platforms"
-                      followers={4}
-                      engagement={33.3}
-                      trend={'up'}
-                      className="bg-amber-50 dark:bg-amber-950"
-                    />
+                    {platformStats.map(stat => (
+                      <PlatformStatsCard
+                        key={stat.platform}
+                        platform={stat.platform}
+                        followers={parseInt(stat.followers)}
+                        engagement={parseFloat(stat.engagement)}
+                        trend={getTrendFromEngagement(engagementData, stat.platform)}
+                        className={getBackgroundColor(stat.platform)}
+                      />
+                    ))}
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="rounded-full bg-green-100 p-2 dark:bg-green-500/20">
