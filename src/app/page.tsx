@@ -8,6 +8,7 @@ import { AreaChart } from '@/components/charts/area-chart';
 import { BarChart } from '@/components/charts/bar-chart';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { PlatformSelect } from '@/components/platform-select';
+import { useDashboardData } from '@/lib/hooks/use-dashboard-data';
 
 // Sample data generator based on platform and date range
 const generateData = (platform: string, startDate: Date, endDate: Date) => {
@@ -22,12 +23,7 @@ const generateData = (platform: string, startDate: Date, endDate: Date) => {
   });
 };
 
-const platformStats = {
-  twitter: { followers: '2.4K', engagement: '12.5%' },
-  instagram: { followers: '15.2K', engagement: '18.7%' },
-  linkedin: { followers: '8.1K', engagement: '9.3%' },
-  facebook: { followers: '32.5K', engagement: '15.1%' },
-};
+
 
 export default function Home() {
   const [platform, setPlatform] = useState('all');
@@ -36,17 +32,11 @@ export default function Home() {
     to: new Date(),
   });
 
-  // Generate data based on selected platform and date range
-  const engagementData = dateRange?.from && dateRange.to
-    ? generateData(platform, dateRange.from, dateRange.to)
-    : [];
-
-  const platformComparison = [
-    { name: 'Twitter', value: 2400 },
-    { name: 'Instagram', value: 15200 },
-    { name: 'LinkedIn', value: 8100 },
-    { name: 'Facebook', value: 32500 },
-  ].filter(item => platform === 'all' || item.name.toLowerCase() === platform);
+  const { platformStats, engagementData, isLoading, error } = useDashboardData(
+    platform,
+    dateRange?.from,
+    dateRange?.to
+  );
 
   return (
     <DashboardLayout>
@@ -67,14 +57,14 @@ export default function Home() {
         
         {/* Platform Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Object.entries(platformStats).map(([name, stats]) => (
+          {platformStats.map((stats) => (
             <div 
-              key={name}
+              key={stats.platform}
               className={`p-4 rounded-lg border bg-card text-card-foreground shadow-sm ${
-                platform !== 'all' && platform !== name ? 'opacity-50' : ''
+                platform !== 'all' && platform !== stats.platform ? 'opacity-50' : ''
               }`}
             >
-              <h3 className="font-medium capitalize">{name}</h3>
+              <h3 className="font-medium capitalize">{stats.platform}</h3>
               <div className="mt-2 text-2xl font-bold">{stats.followers}</div>
               <p className="text-sm text-muted-foreground">
                 Followers • {stats.engagement} Engagement
@@ -90,10 +80,13 @@ export default function Home() {
             data={engagementData}
             color="#0ea5e9"
           />
-          <BarChart 
+          <BarChart
             title="Platform Comparison"
-            data={platformComparison}
-            color="#8b5cf6"
+            data={platformStats.map(stats => ({
+              name: stats.platform,
+              value: parseInt(stats.followers.replace(/[^0-9]/g, ''))
+            }))}
+            color="#0ea5e9"
           />
         </div>
         

@@ -39,12 +39,13 @@ export async function GET(request: Request) {
         SELECT 
           DATE_FORMAT(timestamp, '%a') as name,
           SUM(engagement_count) as value,
-          platform
+          platform,
+          DATE(timestamp) as date
         FROM engagement_metrics
         WHERE timestamp BETWEEN ? AND ?
         ${platform && platform !== 'all' ? 'AND platform = ?' : ''}
-        GROUP BY DATE(timestamp), platform
-        ORDER BY timestamp ASC
+        GROUP BY DATE(timestamp), platform, DATE_FORMAT(timestamp, '%a')
+        ORDER BY date ASC
       `;
       
       const params: (string)[] = [startDate, endDate];

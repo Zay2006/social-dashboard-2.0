@@ -1,11 +1,18 @@
 import mysql from 'mysql2/promise';
 
+// Database configuration
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: '127.0.0.1',      // Hardcoded for local development
+  user: 'root',           // Default MySQL user
+  password: 'Password$123', // Your MySQL password
+  database: 'social_dashboard'
 };
+
+console.log('Using database configuration:', {
+  host: dbConfig.host,
+  user: dbConfig.user,
+  database: dbConfig.database
+});
 
 let pool: mysql.Pool | null = null;
 
