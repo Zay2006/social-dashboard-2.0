@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react';
-import { addDays, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { AreaChart } from '@/components/charts/area-chart';
@@ -9,21 +9,6 @@ import { BarChart } from '@/components/charts/bar-chart';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { PlatformSelect } from '@/components/platform-select';
 import { useDashboardData } from '@/lib/hooks/use-dashboard-data';
-
-// Sample data generator based on platform and date range
-const generateData = (platform: string, startDate: Date, endDate: Date) => {
-  const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  return Array.from({ length: days }, (_, i) => {
-    const date = addDays(startDate, i);
-    const multiplier = platform === 'all' ? 1 : platform === 'instagram' ? 1.5 : 0.8;
-    return {
-      name: date.toLocaleDateString('en-US', { weekday: 'short' }),
-      value: Math.floor(Math.random() * 10000 * multiplier),
-    };
-  });
-};
-
-
 
 export default function Home() {
   const [platform, setPlatform] = useState('all');
@@ -38,9 +23,24 @@ export default function Home() {
     dateRange?.to
   );
 
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="p-4 text-red-500">
+          Error loading dashboard data: {error}
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <div className="grid gap-4 md:gap-6 lg:gap-8">
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-lg">Loading dashboard data...</div>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:gap-6 lg:gap-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-3xl font-bold">Dashboard Overview</h1>
           <div className="flex flex-col gap-2 md:flex-row md:items-center">
@@ -101,6 +101,7 @@ export default function Home() {
           />
         </div>
       </div>
+      )}
     </DashboardLayout>
   );
 }
