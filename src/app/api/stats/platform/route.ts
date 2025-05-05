@@ -1,5 +1,18 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { RowDataPacket } from 'mysql2';
+
+interface PlatformStatsRow extends RowDataPacket {
+  platform: string;
+  followers: number;
+  engagement: number;
+}
+
+interface FormattedPlatformStats {
+  platform: string;
+  followers: string;
+  engagement: string;
+}
 
 export const runtime = 'nodejs';
 
@@ -13,7 +26,7 @@ export async function GET(request: Request) {
 
     try {
       // Get platform followers and engagement metrics
-      let query = `
+      const query = `
         SELECT 
           pf.platform,
           SUM(pf.followers_count) as followers,
@@ -23,13 +36,13 @@ export async function GET(request: Request) {
         ${platform && platform !== 'all' ? 'WHERE pf.platform = ?' : ''}
         GROUP BY pf.platform
       `;
-      const params: any[] = platform && platform !== 'all' ? [platform] : [];
+      const params: string[] = platform && platform !== 'all' ? [platform] : [];
 
-      const [rows] = await connection.execute(query, params);
+      const [rows] = await connection.execute<PlatformStatsRow[]>(query, params);
       
       // Format the response to match the expected structure
-      const formattedRows = (rows as any[]).map(row => ({
-        ...row,
+      const formattedRows: FormattedPlatformStats[] = rows.map(row => ({
+        platform: row.platform,
         engagement: `${row.engagement}%`,
         followers: row.followers.toString()
       }));

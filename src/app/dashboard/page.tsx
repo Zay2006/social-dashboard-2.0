@@ -1,24 +1,24 @@
 "use client"
 
 import { useState } from 'react';
-import { addDays, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { AreaChart } from "@/components/charts/area-chart"
 import { BarChart } from "@/components/charts/bar-chart"
 import { LineChart } from "@/components/charts/line-chart"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlatformStatsCard } from "@/components/platform-stats-card"
-import { cn } from "@/lib/utils"
-import { fadeIn, slideUp } from "@/lib/animations"
-import { chartColors, statColors } from "@/lib/colors"
+import { useDashboardData, PlatformStats } from '@/lib/hooks/use-dashboard-data';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { PlatformSelect } from '@/components/platform-select';
-import { useDashboardData } from '@/lib/hooks/use-dashboard-data';
+import { PlatformStatsCard } from '@/components/cards/platform-stats-card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { fadeIn, slideUp } from '@/lib/animations';
+import { chartColors } from '@/lib/colors';
 import type { ReactNode } from 'react';
 
 export default function DashboardPage() {
-  const [platform, setPlatform] = useState('all');
+  const [platform, setPlatform] = useState<string>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
@@ -60,7 +60,7 @@ export default function DashboardPage() {
           ) : error ? (
             <div className="col-span-4 text-center text-red-500">{error}</div>
           ) : (
-            platformStats.map((stats: any) => {
+            platformStats.map((stats: PlatformStats) => {
               const platformIcons: Record<string, ReactNode> = {
                 Twitter: (
                   <svg key="twitter" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -170,55 +170,32 @@ export default function DashboardPage() {
                 <div className={cn("grid gap-4 md:grid-cols-2", fadeIn())}>
                   <div className={cn("grid gap-4 md:grid-cols-2 lg:grid-cols-4", slideUp(200))}>
                     <PlatformStatsCard
-                      title="Total Followers"
-                      value="45,231"
-                      trend={20.1}
-                      icon={
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                          <circle cx="9" cy="7" r="4" />
-                          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                      }
-                      color="#0ea5e9"
+                      platform="Total"
+                      followers={45231}
+                      engagement={8.5}
+                      trend={'down'}
+                      className="bg-sky-50 dark:bg-sky-950"
                     />
                     <PlatformStatsCard
-                      title="Engagement Rate"
-                      value="15.2%"
-                      trend={7.2}
-                      icon={
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 20V10" />
-                          <path d="M18 20V4" />
-                          <path d="M6 20v-4" />
-                        </svg>
-                      }
-                      color="#10b981"
+                      platform="Overall"
+                      followers={52489}
+                      engagement={15.2}
+                      trend={'up'}
+                      className="bg-sky-50 dark:bg-sky-950"
                     />
                     <PlatformStatsCard
-                      title="Total Posts"
-                      value="342"
-                      trend={3.5}
-                      icon={
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                      }
-                      color="#8b5cf6"
+                      platform="Posts"
+                      followers={342}
+                      engagement={3.5}
+                      trend={'up'}
+                      className="bg-violet-50 dark:bg-violet-950"
                     />
                     <PlatformStatsCard
-                      title="Active Platforms"
-                      value="4"
-                      trend={33.3}
-                      icon={
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M4 11a9 9 0 0 1 9 9" />
-                          <path d="M4 4a16 16 0 0 1 16 16" />
-                          <circle cx="5" cy="19" r="1" />
-                        </svg>
-                      }
-                      color={statColors.platforms.primary}
+                      platform="Platforms"
+                      followers={4}
+                      engagement={33.3}
+                      trend={'up'}
+                      className="bg-amber-50 dark:bg-amber-950"
                     />
                   </div>
                   <div className="flex items-start space-x-3">

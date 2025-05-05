@@ -1,5 +1,19 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { RowDataPacket } from 'mysql2';
+
+interface EngagementRow extends RowDataPacket {
+  name: string;
+  value: number;
+  platform: string;
+}
+
+type AggregatedData = {
+  [key: string]: {
+    name: string;
+    value: number;
+  };
+};
 
 export const runtime = 'nodejs';
 
@@ -21,7 +35,7 @@ export async function GET(request: Request) {
     const connection = await pool.getConnection();
 
     try {
-      let query = `
+      const query = `
         SELECT 
           DATE_FORMAT(timestamp, '%a') as name,
           SUM(engagement_count) as value,
@@ -33,16 +47,16 @@ export async function GET(request: Request) {
         ORDER BY timestamp ASC
       `;
       
-      const params: any[] = [startDate, endDate];
+      const params: (string)[] = [startDate, endDate];
       if (platform && platform !== 'all') {
         params.push(platform);
       }
 
-      const [rows] = await connection.execute(query, params);
+      const [rows] = await connection.execute<EngagementRow[]>(query, params);
       
       if (platform === 'all') {
         // For 'all' platform, sum up engagement across all platforms per day
-        const aggregatedData = (rows as any[]).reduce((acc: any, row) => {
+        const aggregatedData = rows.reduce<AggregatedData>((acc, row) => {
           const date = row.name;
           if (!acc[date]) {
             acc[date] = { name: date, value: 0 };

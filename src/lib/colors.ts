@@ -36,6 +36,12 @@ export const chartColors = {
   }
 }
 
+export const trendColors = {
+  green: "text-emerald-500",
+  red: "text-red-500",
+  neutral: "text-gray-500"
+}
+
 export const statColors = {
   followers: {
     primary: "#0EA5E9",
