@@ -4,7 +4,7 @@ A modern, real-time social media analytics dashboard built with Next.js and MySQ
 
 ## 📁 Project Overview
 - **Industry**: Technology & Social Media Analytics
-- **Developer**: Zay2006
+- **Developer**: [Zay2006](https://github.com/Zay2006)
 - **Version**: 2.0.0
 - **Last Updated**: May 2025
 - **License**: MIT
