@@ -10,8 +10,6 @@ import { DateRangePicker } from '@/components/date-range-picker';
 import { PlatformSelect } from '@/components/platform-select';
 import { useDashboardData } from '@/lib/hooks/use-dashboard-data';
 
-
-
 export default function Home() {
   const [platform, setPlatform] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -19,15 +17,30 @@ export default function Home() {
     to: new Date(),
   });
 
-  const { platformStats, engagementData } = useDashboardData(
+  const { platformStats, engagementData, error, isLoading } = useDashboardData(
     platform,
     dateRange?.from,
     dateRange?.to
   );
 
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="p-4 text-red-500">
+          Error loading dashboard data: {error}
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <div className="grid gap-4 md:gap-6 lg:gap-8">
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-lg">Loading dashboard data...</div>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:gap-6 lg:gap-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-3xl font-bold">Dashboard Overview</h1>
           <div className="flex flex-col gap-2 md:flex-row md:items-center">
@@ -88,6 +101,7 @@ export default function Home() {
           />
         </div>
       </div>
+      )}
     </DashboardLayout>
   );
 }
