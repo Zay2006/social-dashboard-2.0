@@ -37,14 +37,15 @@ export async function GET(request: Request) {
     try {
       const query = `
         SELECT 
-          DATE_FORMAT(timestamp, '%a') as name,
-          SUM(engagement_count) as value,
-          platform,
-          DATE(timestamp) as date
-        FROM engagement_metrics
-        WHERE timestamp BETWEEN ? AND ?
-        ${platform && platform !== 'all' ? 'AND platform = ?' : ''}
-        GROUP BY DATE(timestamp), platform, DATE_FORMAT(timestamp, '%a')
+          DATE_FORMAT(em.timestamp, '%a') as name,
+          COUNT(em.id) as value,
+          p.name as platform,
+          DATE(em.timestamp) as date
+        FROM engagement_metrics em
+        JOIN platforms p ON em.platform_id = p.id
+        WHERE em.timestamp BETWEEN ? AND ?
+        ${platform && platform !== 'all' ? 'AND p.name = ?' : ''}
+        GROUP BY DATE(em.timestamp), p.name, DATE_FORMAT(em.timestamp, '%a')
         ORDER BY date ASC
       `;
       

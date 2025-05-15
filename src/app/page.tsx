@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react';
-import { addDays, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { AreaChart } from '@/components/charts/area-chart';
@@ -9,19 +9,6 @@ import { BarChart } from '@/components/charts/bar-chart';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { PlatformSelect } from '@/components/platform-select';
 import { useDashboardData } from '@/lib/hooks/use-dashboard-data';
-
-// Sample data generator based on platform and date range
-const generateData = (platform: string, startDate: Date, endDate: Date) => {
-  const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  return Array.from({ length: days }, (_, i) => {
-    const date = addDays(startDate, i);
-    const multiplier = platform === 'all' ? 1 : platform === 'instagram' ? 1.5 : 0.8;
-    return {
-      name: date.toLocaleDateString('en-US', { weekday: 'short' }),
-      value: Math.floor(Math.random() * 10000 * multiplier),
-    };
-  });
-};
 
 
 
@@ -32,7 +19,7 @@ export default function Home() {
     to: new Date(),
   });
 
-  const { platformStats, engagementData, isLoading, error } = useDashboardData(
+  const { platformStats, engagementData } = useDashboardData(
     platform,
     dateRange?.from,
     dateRange?.to

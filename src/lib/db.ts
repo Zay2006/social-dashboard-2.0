@@ -8,17 +8,13 @@ const dbConfig = {
   database: 'social_dashboard'
 };
 
-console.log('Using database configuration:', {
-  host: dbConfig.host,
-  user: dbConfig.user,
-  database: dbConfig.database
-});
+// Database configuration is loaded from environment variables
 
 let pool: mysql.Pool | null = null;
 
 export async function connectToDatabase() {
   if (pool) {
-    console.log('🟢 Using existing database connection pool');
+
     return pool;
   }
 
@@ -27,7 +23,7 @@ export async function connectToDatabase() {
     
     // Test the connection
     const connection = await pool.getConnection();
-    console.log('🟢 Database connected successfully');
+
     connection.release();
     
     return pool;

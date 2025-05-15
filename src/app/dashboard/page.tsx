@@ -63,8 +63,20 @@ export default function DashboardPage() {
   // Transform platform stats for comparison chart
   const platformComparison = platformStats.map(stat => ({
     name: stat.platform,
-    value: parseInt(stat.followers.replace(/[^0-9]/g, ''), 10)
+    value: parseInt(stat.followers.replace(/[^0-9]/g, ''), 10) || 0
   }));
+
+  // Ensure we have some default data if nothing is loaded
+  const defaultData = [
+    { name: 'Instagram', value: 8000 },
+    { name: 'LinkedIn', value: 2000 },
+    { name: 'Pinterest', value: 2000 },
+    { name: 'TikTok', value: 12000 },
+    { name: 'Twitter', value: 3000 },
+    { name: 'YouTube', value: 5000 }
+  ];
+
+  const chartData = platformComparison.length > 0 ? platformComparison : defaultData;
 
   return (
     <DashboardLayout>
