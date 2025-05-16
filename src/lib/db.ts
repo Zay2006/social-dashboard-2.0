@@ -2,13 +2,15 @@ import mysql from 'mysql2/promise';
 
 // Database configuration
 const dbConfig = {
-  host: '127.0.0.1',      // Hardcoded for local development
-  user: 'root',           // Default MySQL user
-  password: 'Password$123', // Your MySQL password
-  database: 'social_dashboard'
+  host: process.env.DB_HOST || '127.0.0.1',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'Password$123',
+  database: process.env.DB_DATABASE || 'social_dashboard',
+  ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : undefined
 };
 
-// Database configuration is loaded from environment variables
+// Log connection attempt without exposing sensitive info
+console.log(`🔌 Attempting to connect to database at ${dbConfig.host}...`);
 
 let pool: mysql.Pool | null = null;
 
