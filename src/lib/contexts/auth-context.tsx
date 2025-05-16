@@ -26,17 +26,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check if user is logged in on mount
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me');
+        console.log('🔄 Checking authentication status...');
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include' // Important: include cookies in the request
+        });
+
+        console.log('🔑 Auth check response:', {
+          status: response.status,
+          ok: response.ok
+        });
+
         if (response.ok) {
           const userData = await response.json();
+          console.log('👤 User data received:', userData);
           setUser(userData);
+        } else {
+          console.log('❌ Not authenticated');
+          setUser(null);
         }
-        // Silently handle unauthorized state (user not logged in)
       } catch (error) {
-        // Only log non-auth related errors
-        if (error instanceof Error && !error.message.includes('unauthorized')) {
-          console.error('Auth check failed:', error);
-        }
+        console.error('🚫 Auth check failed:', error);
+        setUser(null);
       }
     };
 
@@ -44,45 +54,90 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await fetch('/api/auth/signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      console.log('🔑 Attempting login...');
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        credentials: 'include', // Important: include cookies in the request
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
-    console.log('📝 Login response:', { status: response.status, ok: response.ok });
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+      const data = await response.json();
+      console.log('📝 Login response:', {
+        status: response.status,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers)
+      });
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      console.log('👤 Setting user data:', data.user);
+      setUser(data.user);
+      
+      // Check if authentication is working
+      const authCheck = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
+      console.log('🔒 Auth check after login:', {
+        status: authCheck.status,
+        ok: authCheck.ok
+      });
+
+      console.log('📍 Navigating to dashboard...');
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('❌ Login failed:', error);
+      throw error;
     }
-
-    console.log('👤 Setting user data:', data.user);
-    setUser(data.user);
-    
-    console.log('📍 Navigating to dashboard...');
-    router.push('/dashboard');
   };
 
   const signup = async (username: string, email: string, password: string) => {
-    const response = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-    });
+    try {
+      console.log('📝 Attempting signup...');
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
 
-    if (!response.ok) {
       const data = await response.json();
-      throw new Error(data.message || 'Signup failed');
-    }
+      console.log('✉️ Signup response:', {
+        status: response.status,
+        ok: response.ok
+      });
 
-    router.push('/auth/signin');
+      if (!response.ok) {
+        throw new Error(data.message || 'Signup failed');
+      }
+
+      console.log('✅ Signup successful, redirecting to signin...');
+      router.push('/auth/signin');
+    } catch (error) {
+      console.error('❌ Signup failed:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    await fetch('/api/auth/signout', { method: 'POST' });
-    setUser(null);
-    router.push('/auth/signin');
+    try {
+      console.log('🚪 Logging out...');
+      await fetch('/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      console.log('👋 Logout successful');
+      setUser(null);
+      router.push('/auth/signin');
+    } catch (error) {
+      console.error('❌ Logout failed:', error);
+      // Still clear the user state and redirect even if the API call fails
+      setUser(null);
+      router.push('/auth/signin');
+    }
   };
 
   return (
