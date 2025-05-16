@@ -63,12 +63,17 @@ export async function POST(request: Request) {
       { status: 200 }
     );
 
+    // Get environment
+    const isProduction = process.env.NODE_ENV === 'production';
+    console.log('🌍 Environment:', process.env.NODE_ENV);
+
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: false, // Set to false for local development
-      sameSite: 'lax', // Changed to lax for better compatibility
-      path: '/', // Ensure cookie is available on all paths
-      maxAge: 86400 // 24 hours
+      secure: isProduction, // Use secure cookies in production
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 86400, // 24 hours
+      domain: isProduction ? '.vercel.app' : undefined // Set domain for production
     });
 
     console.log('🔒 Cookie set, headers:', response.headers.get('set-cookie'));
