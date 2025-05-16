@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ModeToggle } from '@/components/mode-toggle';
 import { useAuth } from '@/lib/contexts/auth-context';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 
 interface Platform {
   id: number;
@@ -17,6 +19,7 @@ interface Platform {
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [newPlatform, setNewPlatform] = useState({ name: '', followersCount: '' });
   const [loading, setLoading] = useState(false);
@@ -85,7 +88,18 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-8">
+      <div className="flex flex-col gap-8 p-8">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => router.push('/dashboard')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </div>
         <h1 className="text-3xl font-bold mb-8">Settings</h1>
         
         <div className="grid gap-8">

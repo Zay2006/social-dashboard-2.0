@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/contexts/auth-context';
 
 export default function SignIn() {
-  const { login } = useAuth();
+  const { } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',

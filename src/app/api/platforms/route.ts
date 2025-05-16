@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     const connection = await getConnection();
     const [platforms] = await connection.execute(
-      `SELECT p.*, pf.followers_count 
+      `SELECT DISTINCT p.id, p.name as platform_name, COALESCE(pf.followers_count, 0) as followers_count 
        FROM platforms p 
        LEFT JOIN platform_followers pf ON p.id = pf.platform_id AND pf.user_id = ?`,
       [userId]
@@ -62,14 +62,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { platform_name, followersCount } = await request.json();
+    const { platformId, followersCount } = await request.json();
 
     const connection = await getConnection();
     
     // Check if platform is already added
     const [existing] = await connection.execute(
-      'SELECT id FROM platform_followers WHERE user_id = ? AND platform_name = ?',
-      [userId, platform_name]
+      'SELECT id FROM platform_followers WHERE user_id = ? AND platform_id = ?',
+      [userId, platformId]
     );
 
     if ((existing as { id: number }[]).length > 0) {
@@ -82,8 +82,8 @@ export async function POST(request: NextRequest) {
 
     // Add platform for user
     await connection.execute(
-      'INSERT INTO platform_followers (user_id, platform_name, followers_count) VALUES (?, ?, ?)',
-      [userId, platform_name, followersCount]
+      'INSERT INTO platform_followers (user_id, platform_id, followers_count) VALUES (?, ?, ?)',
+      [userId, platformId, followersCount]
     );
     
     connection.release();

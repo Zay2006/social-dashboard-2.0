@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import * as jose from 'jose';
 import { cookies } from 'next/headers';
 import { getConnection } from '@/lib/db';
-import { FieldPacket, RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 
 interface JwtPayload {
   userId: number;
@@ -53,7 +53,7 @@ export async function GET() {
     }
 
     return NextResponse.json(user);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: 'Unauthorized' },
       { status: 401 }

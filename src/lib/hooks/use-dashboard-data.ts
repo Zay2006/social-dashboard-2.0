@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 
+import { PlatformName } from '@/types/platform';
+
 export type PlatformStats = {
-  platform: string;
+  id: number;
+  platform: PlatformName;
   followers: string;
   engagement: string;
 };
@@ -12,7 +15,7 @@ export type EngagementData = {
   value: number;
 };
 
-export function useDashboardData(platform: string, startDate?: Date, endDate?: Date) {
+export function useDashboardData(platform: PlatformName, startDate?: Date, endDate?: Date) {
   const [platformStats, setPlatformStats] = useState<PlatformStats[]>([]);
   const [engagementData, setEngagementData] = useState<EngagementData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

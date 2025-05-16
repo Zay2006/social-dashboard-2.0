@@ -33,6 +33,9 @@ export async function POST(request: Request) {
 
     // Verify password
     console.log('🔑 Attempting password verification...');
+    console.log('📧 Email:', email);
+    console.log('🔒 Stored hash:', user.password_hash);
+    console.log('🔑 Provided password:', password);
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     console.log('🔐 Password verification result:', isValidPassword ? 'SUCCESS' : 'FAILED');
     if (!isValidPassword) {

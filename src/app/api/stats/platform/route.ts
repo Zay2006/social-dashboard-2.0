@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 
+
 interface PlatformStatsRow extends RowDataPacket {
   platform: string;
   followers: number;
@@ -19,26 +20,36 @@ export const runtime = 'nodejs';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const platform = searchParams.get('platform');
+  const token = request.headers.get('cookie')?.split('token=')[1]?.split(';')[0];
+
+  if (!token) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     const pool = await connectToDatabase();
     const connection = await pool.getConnection();
 
     try {
-      // Get platform followers and engagement metrics
+      // Get aggregated platform stats across all users
       const query = `
-        SELECT 
+        SELECT DISTINCT
+          p.id,
           p.name as platform,
-          COALESCE(pf.followers_count, 0) as followers,
-          COALESCE(COUNT(em.id), 0) as engagement_count
+          COALESCE(SUM(pf.followers_count), 0) as followers,
+          COALESCE(COUNT(DISTINCT em.id), 0) as engagement_count
         FROM platforms p
         LEFT JOIN platform_followers pf ON p.id = pf.platform_id
         LEFT JOIN engagement_metrics em ON p.id = em.platform_id AND em.timestamp >= DATE_SUB(NOW(), INTERVAL 7 DAY)
         ${platform && platform !== 'all' ? 'WHERE p.name = ?' : ''}
-        GROUP BY p.id, p.name, pf.followers_count
+        GROUP BY p.id, p.name
         ORDER BY p.name ASC
       `;
-      const params: string[] = platform && platform !== 'all' ? [platform] : [];
+
+      const params: string[] = [];
+      if (platform && platform !== 'all') {
+        params.push(platform);
+      }
 
       const [rows] = await connection.execute<PlatformStatsRow[]>(query, params);
       

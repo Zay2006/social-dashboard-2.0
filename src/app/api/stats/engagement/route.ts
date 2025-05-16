@@ -36,17 +36,25 @@ export async function GET(request: Request) {
 
     try {
       const query = `
+        WITH daily_stats AS (
+          SELECT 
+            DATE(em.timestamp) as date,
+            p.name as platform,
+            COUNT(DISTINCT em.id) as engagement_count,
+            SUM(em.engagement_count) as total_engagement
+          FROM engagement_metrics em
+          JOIN platforms p ON em.platform_id = p.id
+          WHERE em.timestamp BETWEEN ? AND ?
+          ${platform && platform !== 'all' ? 'AND p.name = ?' : ''}
+          GROUP BY DATE(em.timestamp), p.name
+        )
         SELECT 
-          DATE_FORMAT(em.timestamp, '%a') as name,
-          COUNT(em.id) as value,
-          p.name as platform,
-          DATE(em.timestamp) as date
-        FROM engagement_metrics em
-        JOIN platforms p ON em.platform_id = p.id
-        WHERE em.timestamp BETWEEN ? AND ?
-        ${platform && platform !== 'all' ? 'AND p.name = ?' : ''}
-        GROUP BY DATE(em.timestamp), p.name, DATE_FORMAT(em.timestamp, '%a')
-        ORDER BY date ASC
+          DATE_FORMAT(ds.date, '%a') as name,
+          COALESCE(ds.total_engagement, 0) as value,
+          ds.platform,
+          ds.date
+        FROM daily_stats ds
+        ORDER BY ds.date ASC
       `;
       
       const params: (string)[] = [startDate, endDate];

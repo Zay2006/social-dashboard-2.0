@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 
 interface Platform {
   id: number;
-  name: string;
-  followers_count: number | null;
+  platform_name: string;
+  followers_count: number;
 }
 
 export default function PlatformManager() {
@@ -97,7 +97,7 @@ export default function PlatformManager() {
             className="flex items-center justify-between bg-gray-700 p-4 rounded"
           >
             <div>
-              <span className="text-white font-medium">{platform.name}</span>
+              <span className="text-white font-medium">{platform.platform_name}</span>
               {platform.followers_count !== null && (
                 <span className="ml-2 text-gray-400">
                   {platform.followers_count.toLocaleString()} followers

@@ -10,8 +10,11 @@ import { DateRangePicker } from '@/components/date-range-picker';
 import { PlatformSelect } from '@/components/platform-select';
 import { useDashboardData } from '@/lib/hooks/use-dashboard-data';
 
+
+import { PlatformName } from '@/types/platform';
+
 export default function Home() {
-  const [platform, setPlatform] = useState('all');
+  const [platform, setPlatform] = useState<PlatformName>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
@@ -59,7 +62,7 @@ export default function Home() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {platformStats.map((stats) => (
             <div 
-              key={stats.platform}
+              key={`${stats.platform}-${stats.id}`}
               className={`p-4 rounded-lg border bg-card text-card-foreground shadow-sm ${
                 platform !== 'all' && platform !== stats.platform ? 'opacity-50' : ''
               }`}
@@ -84,7 +87,7 @@ export default function Home() {
             title="Platform Comparison"
             data={platformStats.map(stats => ({
               name: stats.platform,
-              value: parseInt(stats.followers.replace(/[^0-9]/g, ''))
+              value: parseInt(stats.followers)
             }))}
             color="#0ea5e9"
           />
